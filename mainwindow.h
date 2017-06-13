@@ -26,10 +26,13 @@ private slots:
 
     void on_anuluj_clicked();
 
+
+
 private:
     Ui::MainWindow *ui;
     QTimeEdit *timeEdit1;
     QTimeEdit *timeEdit2;
+    void turnOffNow(QString exec);
 
 };
 

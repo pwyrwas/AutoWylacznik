@@ -97,32 +97,56 @@ void MainWindow::on_wylacz_clicked()
         QTime timeOffComputer = currentTime.addSecs(seconds);
         qDebug() << "Wyłaczenie komputera zaplanowano na: " << timeOffComputer.toString();//<< hour <<  :  << minute;
 
-        // qDebug() << seconds;
-        QProcess process;
-        QMessageBox msgBox;
-        QString exec = "shutdown -s -t " + QString::number(seconds);
-        qDebug() << exec;
-        process.start(exec);
-        process.waitForFinished();
-        QString output(process.readAll());
-        qDebug() << output;
-        output += "Komputer zostanie wyłączony o: ";
-        output += timeOffComputer.toString();
-        QString h,m,s,finalTime;
-        h =QString::number(timeOffComputer.hour());
-        m =QString::number(timeOffComputer.minute());
-        s =QString::number(timeOffComputer.second());
-        finalTime = h+":"+m;
+        if(seconds != 0)
+        {
+            qDebug() << seconds;
+            QProcess process;
+            QMessageBox msgBox;
+            QString exec = "shutdown -s -t " + QString::number(seconds);
+            qDebug() << exec;
+            process.start(exec);
+            process.waitForFinished();
+            QString output(process.readAll());
+            qDebug() << output;
+            output += "Komputer zostanie wyłączony o: ";
+            output += timeOffComputer.toString();
+            QString h,m,s,finalTime;
+            h =QString::number(timeOffComputer.hour());
+            m =QString::number(timeOffComputer.minute());
+            s =QString::number(timeOffComputer.second());
+            finalTime = h+":"+m;
 
-        //Wyświetlanie czasu wyłączenia:
-        ui->lcdNumber->show();
-        ui->lcdNumber->setDigitCount(8);
-        ui->lcdNumber->display(timeOffComputer.toString("hh:mm:ss"));
-        msgBox.setText(output);
-        msgBox.exec();
-        QTime reset(0,0);
-        timeEdit2->setTime(reset);
+            //Wyświetlanie czasu wyłączenia:
+            ui->lcdNumber->show();
+            ui->lcdNumber->setDigitCount(8);
+            ui->lcdNumber->display(timeOffComputer.toString("hh:mm:ss"));
+            msgBox.setText(output);
+            msgBox.exec();
+            QTime reset(0,0);
+            timeEdit2->setTime(reset);
+        }else
+        {
+           QString exec = "shutdown -s -t 3600";
+           int ret;
+           ret = QMessageBox::warning(this, tr("Automatyczny Wyłącznik"), tr("Komputer zostanie wyłączonyw ciągu 10 sekund \nCzy chcesz aby komputer został teraz wyłączony ?"), QMessageBox::Ok |QMessageBox::Cancel);
+           switch (ret) {
+               case QMessageBox::Ok:
+                   turnOffNow(exec);
+                   break;
+               case QMessageBox::Cancel:
+                   break;
+            default:
+                   break;
+           }
+        }
     }
+}
+void MainWindow::turnOffNow(QString exec)
+{
+    QProcess process;
+    process.start(exec);
+    process.waitForFinished();
+    qDebug() << exec;
 }
 
 void MainWindow::on_anuluj_clicked()
