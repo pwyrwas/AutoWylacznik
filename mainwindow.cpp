@@ -184,23 +184,15 @@ void MainWindow::turnOffNow(QString exec)
 }
 void MainWindow::showTime()
 {
-
+    //co wywołanie timera odejmuje od zadanego czasu czas pozostały. W ten sposób wyświetlam nowo uzyskany czas w lcd
     QTime current = QTime::currentTime();
     int secondsToEnd = QTime(0,0,0).secsTo(*objTime);
     int secondsNow = QTime(0,0,0).secsTo(current);
 
     int timeToOffSystem = secondsToEnd - secondsNow;
     QTime time = time.addSecs(timeToOffSystem);
-    //*objTime = objTime->addSecs(-1);
-    // qDebug() << objTime->toString();
     lcd->display(time.toString());
-    /*QTime time = QTime::currentTime();
-    time.addSecs(-1);
-    qDebug() << time.currentTime();
-    QString text = time.currentTime().toString("hh:mm");
-    if ((time.second() % 2) == 0)
-        text[2] = ' ';
-    lcd->display(text);*/
+
 }
 
 void MainWindow::on_anuluj_clicked()
@@ -219,6 +211,7 @@ void MainWindow::on_anuluj_clicked()
     stopWyl->hide();
     msgBox.setText(output);
     msgBox.exec();
+
 
 
 }
