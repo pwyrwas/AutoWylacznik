@@ -5,6 +5,7 @@
 #include <QRadioButton>
 #include <QTimeEdit>
 #include <QLCDNumber>
+#include <QPushButton>
 
 namespace Ui {
 class MainWindow;
@@ -19,9 +20,9 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_radioButton_toggled(bool checked);
+    void on_radioButton_toggled();
 
-    void on_radioButton_2_toggled(bool checked);
+    void on_radioButton_2_toggled();
 
     void on_wylacz_clicked();
 
@@ -34,6 +35,7 @@ private:
     QTimeEdit *timeEdit1;
     QTimeEdit *timeEdit2;
     QLCDNumber *lcd;
+    QPushButton *stopWyl;
     void turnOffNow(QString exec);
 
 };

@@ -8,7 +8,6 @@
 
 
 //co dorobić!
-// Komunikat jeśli wybrane zostanie uruchom po czasie i czas = 00:00 bo komputer wyłącza się bezpośrednio. Dodać informacje do potwierdzenia że wyłączy się natychmiast.
 // Wyłączenie o zadanej godzinie (działa na razie jeżeli nie przekraczamy północy - pomyśleć co gdy ją przekraczamy)
 // Zmiana wyświetlania czasu wyłączenia na odliczanie do wyłączenia. (QTimer ??)
 
@@ -29,7 +28,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_radioButton_toggled(bool checked)
+void MainWindow::on_radioButton_toggled()
 {
     QTime currentTime = QTime::currentTime();
     ui->timeEdit->setTime(currentTime);
@@ -39,7 +38,7 @@ void MainWindow::on_radioButton_toggled(bool checked)
 
 }
 
-void MainWindow::on_radioButton_2_toggled(bool checked)
+void MainWindow::on_radioButton_2_toggled()
 {
     ui->timeEdit->hide();
     ui->timeEdit_2->show();
@@ -52,14 +51,13 @@ void MainWindow::on_wylacz_clicked()
     timeEdit2 = ui->timeEdit_2;
     ui->anuluj->show();
     lcd = ui->lcdNumber;
+    stopWyl = ui->anuluj;
 
 
 
     if(ui->radioButton->isChecked())
     {
         QTime currentTime = QTime::currentTime();
-        int hour = ui->timeEdit->time().hour();
-        int minute = ui->timeEdit->time().minute();
         qDebug() << "Ustawiono wyłączenie komputera o określonej godzinie!";
         qDebug() << "Wyłaczenie komputera zaplanowano na: " << timeEdit1->time().toString();//<< hour <<  :  << minute;
 
@@ -71,33 +69,48 @@ void MainWindow::on_wylacz_clicked()
         if(timeToOffSystem < 0)
             timeToOffSystem *= (-1);
 
-        QProcess process;
-        QMessageBox msgBox;
-        QString exec = "shutdown -s -t " + QString::number(timeToOffSystem);
-        qDebug() << exec;
-        //process.start(exec);
-        //process.waitForFinished();
-        QString output(process.readAll());
-        //qDebug() << output;
-        output += "Komputer zostanie wyłączony o: ";
-        output += QString::number(timeToOffSystem);
-        msgBox.setText(output);
-        msgBox.exec();
-        QTime reset(0,0);
-        timeEdit2->setTime(reset);
-        QTime timeToDisplay = QTime::currentTime();
-        timeToDisplay = timeToDisplay.addSecs(timeToOffSystem);
+        if(timeToOffSystem > 30)
+        {
+            QProcess process;
+            QMessageBox msgBox;
+            QString exec = "shutdown -s -t " + QString::number(timeToOffSystem);
+            qDebug() << exec;
+            process.start(exec);
+            process.waitForFinished();
+            QString output(process.readAll());
 
-        lcd->show();
-        lcd->setDigitCount(8);
-        lcd->display(timeToDisplay.toString("hh:mm:ss"));
+            output += "Komputer zostanie wyłączony o: ";
+            output += QString::number(timeToOffSystem);
+            msgBox.setText(output);
+            msgBox.exec();
+            QTime reset(0,0);
+            timeEdit2->setTime(reset);
+            QTime timeToDisplay = currentTime;
+            timeToDisplay = timeToDisplay.addSecs(timeToOffSystem);
 
-
+            lcd->show();
+            lcd->setDigitCount(8);
+            lcd->display(timeToDisplay.toString("hh:mm:ss"));
+        }else
+        {
+            QString exec = "shutdown -s -t 60";
+            int ret;
+            ret = QMessageBox::warning(this, tr("Automatyczny Wyłącznik"), tr("Komputer zostanie wyłączonyw ciągu 1 minuty! \nCzy chcesz aby komputer został teraz wyłączony ?"), QMessageBox::Ok |QMessageBox::Cancel);
+            switch (ret) {
+                case QMessageBox::Ok:
+                    turnOffNow(exec);
+                    break;
+                case QMessageBox::Cancel:
+                    break;
+             default:
+                    break;
+            }
+        }
     }
     if(ui->radioButton_2->isChecked())
     {
-        int hour = timeEdit2->time().hour();
-        int minute = timeEdit2->time().minute();
+        //int hour = timeEdit2->time().hour();
+        //int minute = timeEdit2->time().minute();
         qDebug() << "Ustawiono wyłączenie komputera za zdefiniowany czas!";
         QTime currentTime = QTime::currentTime();
         int seconds = QTime(0,0,0).secsTo(timeEdit2->time());
@@ -169,7 +182,9 @@ void MainWindow::on_anuluj_clicked()
     qDebug() << output;
     output += "Zatrzymano automatyczne wyłączanie komputera!";
     ui->lcdNumber->hide();
+    stopWyl->hide();
     msgBox.setText(output);
     msgBox.exec();
+
 
 }
