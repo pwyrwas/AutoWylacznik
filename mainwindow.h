@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QRadioButton>
 #include <QTimeEdit>
+#include <QLCDNumber>
 
 namespace Ui {
 class MainWindow;
@@ -32,6 +33,7 @@ private:
     Ui::MainWindow *ui;
     QTimeEdit *timeEdit1;
     QTimeEdit *timeEdit2;
+    QLCDNumber *lcd;
     void turnOffNow(QString exec);
 
 };
