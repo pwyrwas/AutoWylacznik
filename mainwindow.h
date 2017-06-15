@@ -6,6 +6,7 @@
 #include <QTimeEdit>
 #include <QLCDNumber>
 #include <QPushButton>
+#include <QTime>
 
 namespace Ui {
 class MainWindow;
@@ -18,6 +19,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    QTime*  objTime;
 
 private slots:
     void on_radioButton_toggled();
@@ -27,6 +29,9 @@ private slots:
     void on_wylacz_clicked();
 
     void on_anuluj_clicked();
+
+    void showTime();
+
 
 
 

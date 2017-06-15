@@ -219,6 +219,7 @@ void MainWindow::on_anuluj_clicked()
     stopWyl->hide();
     msgBox.setText(output);
     msgBox.exec();
+    
 
 
 }
