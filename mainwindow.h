@@ -20,6 +20,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     QTime*  objTime;
+    //QTimer* timer ;
 
 private slots:
     void on_radioButton_toggled();

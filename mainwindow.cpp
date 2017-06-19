@@ -7,7 +7,7 @@
 #include <QDateTime>
 #include <QTimer>
 
-
+ QTimer* timer;
 //co dorobić!
 // Wyłączenie o zadanej godzinie (działa na razie jeżeli nie przekraczamy północy - pomyśleć co gdy ją przekraczamy)
 // Zmiana wyświetlania czasu wyłączenia na odliczanie do wyłączenia. (QTimer ??)
@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->wylacz->hide();
     ui->anuluj->hide();
     ui->lcdNumber->hide();
+    timer = new QTimer(this);
+
 }
 
 MainWindow::~MainWindow()
@@ -79,15 +81,15 @@ void MainWindow::on_wylacz_clicked()
             process.start(exec);
             process.waitForFinished();
             QString output(process.readAll());
-
+            QTime timeToDisplay = currentTime;
+            timeToDisplay = timeToDisplay.addSecs(timeToOffSystem);
             output += "Komputer zostanie wyłączony o: ";
-            output += QString::number(timeToOffSystem);
+            output += timeToDisplay.toString();
             msgBox.setText(output);
             msgBox.exec();
             QTime reset(0,0);
             timeEdit2->setTime(reset);
-            QTime timeToDisplay = currentTime;
-            timeToDisplay = timeToDisplay.addSecs(timeToOffSystem);
+
 
             lcd->show();
             lcd->setDigitCount(8);
@@ -153,7 +155,7 @@ void MainWindow::on_wylacz_clicked()
             timeToEnd = timeToEnd.addSecs(seconds);
             //qDebug() << timeToEnd << "Ten czas" <<seconds;
             *objTime = timeOffComputer;
-            QTimer* timer = new QTimer(this);
+
             timer->setInterval(1);
             connect(timer, SIGNAL(timeout()), this, SLOT(showTime()));
             timer->start(seconds);
@@ -197,6 +199,11 @@ void MainWindow::showTime()
 
 void MainWindow::on_anuluj_clicked()
 {
+    if(timer->isActive())
+    {
+        timer->stop();
+        qDebug() << "Timer stop";
+    }
     QProcess process;
     QMessageBox msgBox;
     QString exec = "shutdown -a";
